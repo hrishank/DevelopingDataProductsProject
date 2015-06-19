@@ -1,0 +1,72 @@
+---
+title       : Effect of variables on the MPG prediction
+subtitle    : Using the default mtcars data set in R
+author      : Hrishank Jhildiyal
+job         : For the JHU Coursera Course 'Developing Data Products' Project
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Introduction
+
+This presentation serves to pitch the App created for the JHU Data Science's course called 'Developing Data Products' on Coursera. For the project, an App was created which uses the mtcars data set and predicts the effect of the HP, CYL and WT independent variables on the MPG of a hypothetical car.
+
+The App being referenced to can be found here:
+```{r, results='asis', echo=FALSE}
+html <- "http://hrishank.shinyapps.io/Project"
+cat(paste("[Shiny App](",html,")",sep=""))
+```
+
+The App contains three sliders, one each for the HP, CYL, and WT such that you can enter this information and click the 'Submit' button to predict how many miles per gallon such a car would get. This result is displayed under the "Results of prediction for the MPG" heading.
+
+```{r}
+head(mtcars, 3)
+```
+
+
+
+--- .class #id 
+
+## The linear regression formula used for the prediction
+
+```{r}
+data(mtcars)
+fit <- lm(mpg ~ cyl + hp + wt, data = mtcars)
+summary(fit)$coef
+```
+
+From the results above, we see that each increment in weight has the highest negative impact of the 3 variables on the MPG
+
+--- .class #id 
+
+## How do the independent variables interact with MPG?
+
+```{r, echo=FALSE, warning=FALSE}
+require(gridExtra)
+require(ggplot2)
+g1 <- ggplot(mtcars, aes(x=mpg, y=hp)) + geom_point(color = "steelblue", size = 4, alpha=1/2) + stat_smooth(method = "lm", col = "red") + labs(title = "MPG vs HP") 
+    g2 <- ggplot(mtcars, aes(factor(cyl), mpg, fill = factor(cyl))) + geom_boxplot() + labs(title = "MPG vs CYL") + theme(legend.position="none")
+    g3 <- ggplot(mtcars, aes(x=mpg, y=wt)) + geom_point(color = "darkgreen", size = 4, alpha=1/2) + stat_smooth(method = "lm", col = "darkgreen") + labs(title = "MPG vs WT") 
+    grid.arrange(g1, g2, g3, ncol = 3)
+```
+
+
+--- .class #id 
+
+## Prediction of MPG on the Shiny IO App
+
+The "26.85" number will change to something else once at least one of the inputs is changed and the Submit button is clicked
+
+```{r, echo=FALSE, warning=FALSE, fig.width=12, fig.height=6}
+require(png)
+require(grid)
+img <- readPNG('assets/img/ShinyIO1.png')
+ grid.raster(img)
+```
+
+--- .class #id 
+
